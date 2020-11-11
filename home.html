@@ -1,0 +1,226 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Moment.js Stopwatch</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script
+      type="text/javascript"
+      src="http://jsfiddle.net/js/lib/dummy.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://jsfiddle.net/css/normalize.css"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://jsfiddle.net/css/result-light.css"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
+    <style id="compiled-css" type="text/css">
+      *,
+      *:before,
+      *:after {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0 auto;
+        width: 20em;
+      }
+
+      .stopwatch {
+        background: #c0ffee;
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 2rem;
+        width: 100%;
+        height: 2em;
+      }
+
+      .container {
+        margin: 0 auto;
+        padding: 0.4em;
+        width: 60%;
+        height: 100%;
+        color: #111;
+      }
+
+      .button {
+        background: #bada55;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        margin-top: 0.2em;
+        margin-right: 1%;
+        padding: 0.3em;
+        width: 48%;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .button:hover,
+      .button:focus {
+        background: #fff;
+        color: #bada55;
+        font-weight: 700;
+      }
+
+      .button:last-child {
+        background: #e00;
+        color: #fff;
+        margin-right: 0;
+      }
+
+      .button:last-child:hover,
+      .button:last-child:focus {
+        background: #fff;
+        color: #e00;
+        font-weight: 700;
+      }
+
+      .container1 {
+        display: none;
+      }
+
+      /* EOS */
+    </style>
+
+    <script id="insert"></script>
+
+    <!-- <script
+      src="/js/stringify.js?4f0217f4c0a6e4b5fd9ba4022b7eda3246168d47"
+      charset="utf-8"
+    ></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+
+  <body onload="chargement()">
+    <div class="stopwatch" id="stopwatch">
+      <div id="time-container" class="container">00:00:00</div>
+      <div id="time-container1" class="container1">00:00:00</div>
+      <button class="button" id="start">Start</button>
+      <button class="button" id="stop">Stop</button>
+    </div>
+
+    <script type="text/javascript">
+      var AppStopwatch = (function () {
+        var counter = 0,
+          $stopwatch = {
+            el: document.getElementById('stopwatch'),
+            container: document.getElementById('time-container'),
+            container1: document.getElementById('time-container1'),
+            startControl: document.getElementById('start'),
+            stopControl: document.getElementById('stop'),
+          };
+
+        var runClock;
+
+        function displayTime() {
+          counter++;
+          $stopwatch.container.innerHTML = moment()
+            .hour(0)
+            .minute(0)
+            .second(counter)
+            .format('HH : mm : ss');
+
+          $stopwatch.container1.innerHTML = moment()
+            .hour(0)
+            .minute(0)
+            .second(counter);
+        }
+
+        function startWatch() {
+          runClock = setInterval(displayTime, 1000);
+        }
+
+        function stopWatch() {
+          clearInterval(runClock);
+        }
+
+        return {
+          startClock: startWatch,
+          stopClock: stopWatch,
+          $start: $stopwatch.startControl,
+          $stop: $stopwatch.stopControl,
+          $stopwatch,
+        };
+      })();
+
+      //AppStopwatch.$start.addEventListener('click', AppStopwatch.startClock, false);
+
+      AppStopwatch.$stop.addEventListener(
+        'click',
+        AppStopwatch.stopClock,
+        false
+      );
+
+      function getXMLHttpRequest() {
+        var xhr = null;
+
+        if (window.XMLHttpRequest || window.ActiveXObject) {
+          if (window.ActiveXObject) {
+            try {
+              xhr = new ActiveXObject('Msxml2.XMLHTTP');
+            } catch (e) {
+              xhr = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+          } else {
+            xhr = new XMLHttpRequest();
+          }
+        } else {
+          alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+          return null;
+        }
+
+        return xhr;
+      }
+
+      var xhr = getXMLHttpRequest(); // Voyez la fonction getXMLHttpRequest() définie dans la partie précédente
+
+      // xhr.open('GET', 'timeestimator.py', true);
+      // xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      // xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
+      // xhr.send('temps=' + sessionStorage.getItem('time'));
+      console.log(xhr.open("GET", "/test.txt", true));
+      // xhr.send();
+
+
+      function chargement() {
+        AppStopwatch.startClock();
+        var title = setInterval(function () {
+          temps = new Date(
+            AppStopwatch.$stopwatch.container1.innerText
+          ).getSeconds();
+          sessionStorage.setItem('time', temps);
+          if (temps == 50) {
+            clearInterval(title);
+            AppStopwatch.stopClock();
+          }
+        }, 5000);
+      }
+    </script>
+    <script type="text/javascript">
+      $(function () {
+        $(document).on('beforeunload', function () {
+          alert('ffdfdfdf');
+          $(AppStopwatch.$stop).trigger('click');
+        });
+      });
+    </script>
+    <script>
+      var saveClock;
+    </script>
+  </body>
+</html>
